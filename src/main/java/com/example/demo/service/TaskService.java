@@ -1,0 +1,72 @@
+package com.example.demo.service;
+
+import com.example.demo.entity.Task;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class TaskService {
+
+    private final List<Task> tasks = new ArrayList<>();
+    private static int counter = 100;
+
+    public TaskService() {
+
+        tasks.add(new Task(
+                1,
+                "Learn Spring Boot",
+                "Practice building applications with Spring Boot",
+                "2025-12-04",
+                "Pending",
+                "High",
+                "2025-12-02"
+        ));
+
+        tasks.add(new Task(
+                2,
+                "Build Task App",
+                "Complete the Task Reminder application project",
+                "2025-12-05",
+                "In Progress",
+                "Medium",
+                "2025-12-02"
+        ));
+    }
+
+    // renamed from getAllTask to getAllTasks
+    public List<Task> getAllTasks() {
+        return tasks;
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public static int nextid() {
+        return counter++;
+    }
+
+    public void updateTask(Task updatedTask) {
+        Task old = getTaskById(updatedTask.getId());
+        if (old != null) {
+            old.setTitle(updatedTask.getTitle());
+            old.setDescription(updatedTask.getDescription());
+            old.setDueDate(updatedTask.getDueDate());
+            old.setStatus(updatedTask.getStatus());
+            old.setPriority(updatedTask.getPriority());
+        }
+    }
+
+    public void deleteTask(int id) {
+        tasks.removeIf(t -> t.getId() == id);
+    }
+
+    public Task getTaskById(int id) {
+        return tasks.stream()
+                .filter(t -> t.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+}
