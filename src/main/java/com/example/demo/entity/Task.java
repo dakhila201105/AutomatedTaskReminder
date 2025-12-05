@@ -1,7 +1,12 @@
 package com.example.demo.entity;
 
-public class Task {
+import jakarta.persistence.*;
 
+@Entity
+public class Task {
+    @Id //for representing the primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="task_id")
     private Integer id;
     private String title;
     private String description;

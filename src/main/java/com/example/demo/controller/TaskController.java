@@ -32,8 +32,19 @@ public class TaskController {
     }
 
     @PostMapping("/add")
-    public  String saveTask(@ModelAttribute Task task){
-        task.setId(TaskService.nextId());
+    public  String saveTask(@ModelAttribute Task task,Model model)
+    {
+        if (task.getTitle()==null||task.getTitle().trim().isEmpty()){
+            model.addAttribute("errorMessage","Title is required!");
+            model.addAttribute("task",task);
+            return "add-task";
+        }
+        if (task.getDueDate()==null||task.getDueDate().trim().isEmpty()){
+            model.addAttribute("errorMessage","Due Date is required!");
+            model.addAttribute("task",task);
+            return "add-task";
+        }
+        //task.setId(TaskService.nextId()); as in memory is not being used not needed
         task.setCreatedAt(LocalDateTime.now().toString());
         taskService.addTask(task);
         return "redirect:/tasks";
@@ -41,7 +52,7 @@ public class TaskController {
 
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Integer id ,Model model){
-        Task task =taskService.getTaskById(id);
+        Task task =taskService.findById(id).orElse(null);
 
         if(task==null){
             return "redirect:/tasks";
@@ -50,19 +61,32 @@ public class TaskController {
         return "edit-task";
     }
     @PostMapping("/update")
-    public String updateTask(@ModelAttribute Task task){
+    public String updateTask(@ModelAttribute Task task,Model model){
+        if(task.getTitle()==null||task.getTitle().trim().isEmpty()){
+            model.addAttribute("errorMessage","Title is required!");
+            model.addAttribute("task",task);
+            return "edit-task";
+        }
+        if (task.getDueDate()==null||task.getDueDate().trim().isEmpty()){
+            model.addAttribute("errorMessage","Due Date is required!");
+            model.addAttribute("task",task);
+            return "edit-task";
+        }
+        Task existing = taskService.findById(task.getId()).orElse(null);
+        task.setCreatedAt(existing.getCreatedAt());
         taskService.updateTask(task);
         return "redirect:/tasks";
     }
 
     @GetMapping("/delete/{id}")
     public String deleteTask(@PathVariable Integer id){
-        if(taskService.getTaskById(id)==null){
+        if(taskService.findById(id).isEmpty()){//do not go with .findById(id)==null
             return "redirect:/tasks";
         }
         taskService.deleteTask(id);
         return "redirect:/tasks";
     }
+
 
 
 }

@@ -3,8 +3,13 @@
 <head>
     <title>Add Task</title>
 </head>
+
 <body>
 <h1 th:text="${message}">Add Task</h1>
+
+<div th:if="${errorMessage}" style="color:red; margin-bottom:10px">
+    <p th:text="${errorMessage}"></p>
+</div>
 
 <form th:action="@{/add}" th:object="${task}" method="post">
     <div>
