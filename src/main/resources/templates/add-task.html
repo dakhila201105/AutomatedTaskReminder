@@ -4,37 +4,43 @@
     <title>Add Task</title>
 </head>
 <body>
+<h1 th:text="${message}">Add Task</h1>
 
-<h2>Add New Task</h2>
+<form th:action="@{/add}" th:object="${task}" method="post">
+    <div>
+        <label>Title:</label>
+        <input type="text" th:field="*{title}" />
+    </div>
 
-<form th:action="@{/api/tasks/add}" th:object="${task}" method="post">
+    <div>
+        <label>Description:</label>
+        <input type="text" th:field="*{description}" />
+    </div>
 
-    <label>Title:</label>
-    <input type="text" th:field="*{title}" required/><br><br>
+    <div>
+        <label>Due Date:</label>
+        <input type="date" th:field="*{dueDate}" />
+    </div>
 
-    <label>Description:</label>
-    <textarea th:field="*{description}"></textarea><br><br>
+    <div>
+        <label>Status:</label>
+        <select th:field="*{status}">
+            <option th:value ="'Pending'"> Pending </option>
+            <option th:value="'In Progress'">In Progress</option>
+            <option th value="'Completed'">Completed </option>
+        </select>
+    </div>
 
-    <label>Due Date:</label>
-    <input type="date" th:field="*{dueDate}" required/><br><br>
-
-    <label>Status:</label>
-    <select th:field="*{status}">
-        <option value="Pending">Pending</option>
-        <option value="Done">Done</option>
-    </select>
-    <br><br>
-
-    <label>Priority:</label>
-    <select th:field="*{priority}">
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
-    </select>
-    <br><br>
+    <div>
+        <label>Priority:</label>
+        <select th:field="*{priority}">
+            <option th:value ="'Low'">Low</option>
+            <option th:value ="'Medium'">Medium</option>
+            <option th:value ="'High'">High</option>
+        </select>
+    </div>
 
     <button type="submit">Add Task</button>
-
 </form>
 
 </body>

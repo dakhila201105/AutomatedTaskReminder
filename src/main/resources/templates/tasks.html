@@ -1,26 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Task List</title>
+    <title>Tasks</title>
 </head>
 <body>
-
 <h1>All Tasks</h1>
 
-<table border="1" cellpadding="8" cellspacing="0">
+<table border="1">
     <thead>
     <tr>
-        <th>ID</th>
+        <th>Id</th>
         <th>Title</th>
         <th>Description</th>
         <th>Due Date</th>
         <th>Status</th>
         <th>Priority</th>
         <th>Created At</th>
+        <th>Updated</th>
+        <th>Actions</th>
     </tr>
     </thead>
-
     <tbody>
     <tr th:each="task : ${tasks}">
         <td th:text="${task.id}"></td>
@@ -30,9 +29,18 @@
         <td th:text="${task.status}"></td>
         <td th:text="${task.priority}"></td>
         <td th:text="${task.createdAt}"></td>
+
+        <td th:text="${task.updated ? 'Updated' : '-'}"></td>
+        <td>
+            <a th:href="@{'/edit/' + ${task.id}}">Edit</a>
+            <a th:href="@{'/delete/' + ${task.id}}">Delete</a>
+        </td>
+
     </tr>
     </tbody>
 </table>
+
+<a th:href="@{/}">Add another task</a>
 
 </body>
 </html>

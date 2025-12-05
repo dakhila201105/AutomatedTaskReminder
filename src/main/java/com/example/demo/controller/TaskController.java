@@ -1,39 +1,68 @@
 package com.example.demo.controller;
 
-import com.example.demo.service.TaskService;
+
 import com.example.demo.entity.Task;
+import com.example.demo.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+
+
+import java.time.LocalDateTime;
 
 @Controller
 public class TaskController {
 
-    private final TaskService taskService;
+    @Autowired
+    private TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
 
     @GetMapping("/tasks")
     public String getTasks(Model model) {
-        // renamed to getAllTasks() in service
         model.addAttribute("tasks", taskService.getAllTasks());
-        return "tasks"; // View name
+        return "tasks";
     }
 
-    // GET TASK BY ID (delegating to service)
-    public Task getTaskById(int id) {
-        return taskService.getTaskById(id);
+
+    @GetMapping("/add")
+    public String showAddForm(Model model){
+        model.addAttribute("task", new Task());
+        return "add-task";
     }
 
-    // UPDATE TASK (delegating to service)
-    public void updateTask(Task updatedTask) {
-        taskService.updateTask(updatedTask);
+    @PostMapping("/add")
+    public  String saveTask(@ModelAttribute Task task){
+        task.setId(TaskService.nextId());
+        task.setCreatedAt(LocalDateTime.now().toString());
+        taskService.addTask(task);
+        return "redirect:/tasks";
     }
 
-    // DELETE TASK (delegating to service)
-    public void deleteTask(int id) {
+    @GetMapping("/edit/{id}")
+    public String showEditForm(@PathVariable Integer id ,Model model){
+        Task task =taskService.getTaskById(id);
+
+        if(task==null){
+            return "redirect:/tasks";
+        }
+        model.addAttribute("task",task);
+        return "edit-task";
+    }
+    @PostMapping("/update")
+    public String updateTask(@ModelAttribute Task task){
+        taskService.updateTask(task);
+        return "redirect:/tasks";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteTask(@PathVariable Integer id){
+        if(taskService.getTaskById(id)==null){
+            return "redirect:/tasks";
+        }
         taskService.deleteTask(id);
+        return "redirect:/tasks";
     }
+
+
 }

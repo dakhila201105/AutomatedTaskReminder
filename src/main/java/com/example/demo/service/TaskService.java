@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 public class TaskService {
 
@@ -13,7 +14,6 @@ public class TaskService {
     private static int counter = 100;
 
     public TaskService() {
-
         tasks.add(new Task(
                 1,
                 "Learn Spring Boot",
@@ -21,7 +21,7 @@ public class TaskService {
                 "2025-12-04",
                 "Pending",
                 "High",
-                "2025-12-02"
+                "2025-12-02 10:00"
         ));
 
         tasks.add(new Task(
@@ -31,11 +31,10 @@ public class TaskService {
                 "2025-12-05",
                 "In Progress",
                 "Medium",
-                "2025-12-02"
+                "2025-12-02 12:00"
         ));
     }
 
-    // renamed from getAllTask to getAllTasks
     public List<Task> getAllTasks() {
         return tasks;
     }
@@ -44,29 +43,35 @@ public class TaskService {
         tasks.add(task);
     }
 
-    public static int nextid() {
+    public static int nextId() {
         return counter++;
     }
 
-    public void updateTask(Task updatedTask) {
-        Task old = getTaskById(updatedTask.getId());
-        if (old != null) {
-            old.setTitle(updatedTask.getTitle());
-            old.setDescription(updatedTask.getDescription());
-            old.setDueDate(updatedTask.getDueDate());
-            old.setStatus(updatedTask.getStatus());
-            old.setPriority(updatedTask.getPriority());
-        }
-    }
-
-    public void deleteTask(int id) {
-        tasks.removeIf(t -> t.getId() == id);
-    }
-
+    // optional, you already had these:
     public Task getTaskById(int id) {
         return tasks.stream()
                 .filter(t -> t.getId() == id)
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void updateTask(Task updatedTask) {
+        Task old = getTaskById(updatedTask.getId());
+        if (old == null) {
+            return;
+        }
+
+        old.setTitle(updatedTask.getTitle());
+        old.setDescription(updatedTask.getDescription());
+            old.setDueDate(updatedTask.getDueDate());
+            old.setStatus(updatedTask.getStatus());
+            old.setPriority(updatedTask.getPriority());
+            old.setUpdated(true);
+
+
+    }
+
+    public void deleteTask(int id) {
+        tasks.removeIf(t -> t.getId() == id);
     }
 }

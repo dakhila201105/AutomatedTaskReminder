@@ -9,8 +9,8 @@ public class Task {
     private String status;
     private String priority;
     private String createdAt;
+    private boolean updated;
 
-    // ---- Constructors ----
     public Task() {}
 
     public Task(Integer id, String title, String description, String dueDate,
@@ -24,7 +24,7 @@ public class Task {
         this.createdAt = createdAt;
     }
 
-    // ---- Getters & Setters ----
+
     public Integer getId() {
         return id;
     }
@@ -80,4 +80,11 @@ public class Task {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
+    public boolean isUpdated(){
+        return updated;
+    }
+    public void setUpdated(boolean updated){
+        this.updated=updated;
+    }
+
 }
