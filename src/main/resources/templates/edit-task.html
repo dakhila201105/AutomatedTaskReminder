@@ -31,25 +31,30 @@
     </style>
 </head>
 <body>
+<div class="container">
+    <div th:if ="${errorMessage}"class="flash flash-success" th:text="${errorMessage}"></div>
+    <div th:if ="${errorMessage}"class="flash flash-error" th:text="${errorMessage}"></div>
+
+</div>
 
 <h2>Edit Task</h2>
 <div th:if="${errorMessage}" style="color:red;margin-bottom:10px">
     <p th:text="${errorMessage}"></p>
 </div>
 
-<form th:action="@{/update}" th:object="${task}" method="post">
+<form th:action="@{/tasks/update}" th:object="${task}" method="post">
 
     <!-- Hidden ID field -->
     <input type="hidden" th:field="*{id}" />
 
     <label>Title:</label>
-    <input type="text" th:field="*{title}" required />
+    <input type="text" th:field="*{title}" required  minlength="3" maxlength="100"/>
 
     <label>Description:</label>
     <textarea th:field="*{description}" required></textarea>
 
     <label>Due Date (YYYY-MM-DD):</label>
-    <input type="text" th:field="*{dueDate}" required />
+    <input type="date" th:field="*{dueDate}" required />
 
 
     <label>Status:</label>

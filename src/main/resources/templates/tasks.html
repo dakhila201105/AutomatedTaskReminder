@@ -6,6 +6,51 @@
 <body>
 <h1>All Tasks</h1>
 
+
+<div class="search-section">
+
+    <!-- Search by Title -->
+    <form th:action="@{/tasks/search}" method="get">
+        <input type="text"
+               name="keyword"
+               placeholder="Search by title"
+               minlength="1"
+               maxlength="100"
+               required />
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Filter by Status -->
+    <form th:action="@{/tasks/status}" method="get">
+        <select name="status" required>
+            <option value="">-- Status --</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Filter by Priority -->
+    <form th:action="@{/tasks/priority}" method="get">
+        <select name="priority" required>
+            <option value="">-- Priority --</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- Filter by Due Date -->
+    <form th:action="@{/tasks/due}" method="get">
+        <input type="date" name="date" required />
+        <button type="submit">Filter</button>
+    </form>
+
+</div>
+
+
 <table border="1">
     <thead>
     <tr>
@@ -30,17 +75,23 @@
         <td th:text="${task.priority}"></td>
         <td th:text="${task.createdAt}"></td>
 
-        <td th:text="${task.updated ? 'Updated' : '-'}"></td>
+        <td th:text="${task.updated ? 'Updated' : 'New'}"></td>
         <td>
-            <a th:href="@{'/edit/' + ${task.id}}">Edit</a>
-            <a th:href="@{'/delete/' + ${task.id}}">Delete</a>
+            <a th:href="@{/tasks/edit/{id}(id=${task.id})}">Edit</a>
+            <a th:href="@{/tasks/delete/{id}(id=${task.id})}"
+               onclick="return confirm('Delete task?')">Delete</a>
+            <a th:href="@{/tasks/markdown/{id}(id=${task.id})}">
+                Mark Done
+            </a>
         </td>
 
     </tr>
     </tbody>
 </table>
 
-<a th:href="@{/}">Add another task</a>
+<a th:href="@{/tasks/add}">Add another task</a>
+
+
 
 </body>
 </html>

@@ -2,51 +2,168 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Task</title>
+
+    <style>
+        .form-row {
+            margin-bottom: 12px;
+        }
+        .markdown-toolbar button {
+            margin-right: 6px;
+            padding: 4px 8px;
+            cursor: default;
+        }
+    </style>
 </head>
 
 <body>
-<h1 th:text="${message}">Add Task</h1>
 
-<div th:if="${errorMessage}" style="color:red; margin-bottom:10px">
-    <p th:text="${errorMessage}"></p>
+<div class="container">
+
+    <h1 th:text="${message}">Add New Task</h1>
+
+    <div th:if="${errorMessage}" style="color:red; margin-bottom:10px">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="@{/tasks/add}" th:object="${task}" method="post">
+
+        <!-- TITLE -->
+        <div class="form-row">
+            <label>Title:</label>
+            <input type="text"
+                   th:field="*{title}"
+                   required
+                   minlength="3"
+                   maxlength="100"
+                   placeholder="Enter task title" />
+        </div>
+
+        <!-- DESCRIPTION (MARKDOWN ENABLED INPUT) -->
+        <div class="form-row">
+            <label>Description:</label>
+
+            <textarea th:field="*{description}"
+                      rows="4"
+                      minlength="5"
+                      maxlength="500"
+                      placeholder="Enter your Text">
+            </textarea>
+        </div>
+
+        <!-- DUE DATE -->
+        <div class="form-row">
+            <label>Due Date:</label>
+            <input type="date"
+                   th:field="*{dueDate}" required />
+        </div>
+
+        <!-- STATUS -->
+        <div class="form-row">
+            <label>Status:</label>
+            <select th:field="*{status}" required>
+                <option value="">--Select--</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+            </select>
+        </div>
+
+        <!-- PRIORITY -->
+        <div class="form-row">
+            <label>Priority:</label>
+            <select th:field="*{priority}" required>
+                <option value="">--Select--</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="form-row">
+            <button type="submit">Save Task</button>
+            <a href="/tasks">Cancel</a>
+        </div>
+
+    </form>
+
 </div>
 
-<form th:action="@{/add}" th:object="${task}" method="post">
-    <div>
-        <label>Title:</label>
-        <input type="text" th:field="*{title}" />
-    </div>
-
-    <div>
-        <label>Description:</label>
-        <input type="text" th:field="*{description}" />
-    </div>
-
-    <div>
-        <label>Due Date:</label>
-        <input type="date" th:field="*{dueDate}" />
-    </div>
-
-    <div>
-        <label>Status:</label>
-        <select th:field="*{status}">
-            <option th:value ="'Pending'"> Pending </option>
-            <option th:value="'In Progress'">In Progress</option>
-            <option th value="'Completed'">Completed </option>
-        </select>
-    </div>
-
-    <div>
-        <label>Priority:</label>
-        <select th:field="*{priority}">
-            <option th:value ="'Low'">Low</option>
-            <option th:value ="'Medium'">Medium</option>
-            <option th:value ="'High'">High</option>
-        </select>
-    </div>
-
-    <button type="submit">Add Task</button>
-</form>
+<footer class="footer">
+    <div>Task Reminder</div>
+</footer>
 
 </body>
 </html>
+
+
+
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--    <title>Add Task</title>-->
+<!--</head>-->
+
+<!--<body>-->
+<!--<div class="container">-->
+<!--    <div th:if="${errorMessage}" class-->
+
+
+<!--</div>-->
+<!--<h1 th:text="${message}">Add New Task</h1>-->
+
+<!--<div th:if="${errorMessage}" style="color:red; margin-bottom:10px">-->
+<!--    <p th:text="${errorMessage}"></p>-->
+<!--</div>-->
+
+<!--<form th:action="@{/api/tasks/add}" th:object="${task}" method="post">-->
+
+<!--    <div class="form-row">-->
+<!--        <label>Title:</label>-->
+<!--        <input type="text" th:field="*{title}" Required minlength="1" maxlength="100" />-->
+<!--    </div>-->
+
+<!--    <div class="form-row">-->
+<!--        <label>Description:</label>-->
+<!--        <input type="text" th:field="*{description}" maxlength="500"/>-->
+<!--    </div>-->
+
+<!--    <div class="form-row">-->
+<!--        <label>Due Date:</label>-->
+<!--        <input type="date" th:field="*{dueDate}"  required-->
+<!--        th:attr="min$(dates.format(#dates.createnew(),'yyyy-mm-dd'))"/>-->
+
+<!--    </div>-->
+
+<!--    <div class="form-row">-->
+<!--        <label>Status:</label>-->
+<!--        <select th:field="*{status}">-->
+<!--            <option value ="">&#45;&#45;Select&#45;&#45;</option>-->
+<!--            <option th:value ="'Pending'"> Pending </option>-->
+<!--            <option th:value="'In Progress'">In Progress</option>-->
+<!--            <option th value="'Completed'">Completed </option>-->
+<!--        </select>-->
+<!--    </div>-->
+
+<!--    <div class="form-row">-->
+<!--        <label>Priority:</label>-->
+<!--        <select th:field="*{priority}" required>-->
+<!--            <option value ="">&#45;&#45;Select&#45;&#45;</option>-->
+<!--            <option th:value ="'Low'">Low</option>-->
+<!--            <option th:value ="'Medium'">Medium</option>-->
+<!--            <option th:value ="'High'">High</option>-->
+<!--        </select>-->
+<!--    </div>-->
+<!--    <div style="margin-top::12px;">-->
+<!--        <button type="submit"class="btn btn-primary">Save Task</button>-->
+<!--        <a href="/api/tasks" class="btn">Cancel</a>-->
+<!--    </div>-->
+
+<!--    <button type="submit">Add Task</button>-->
+
+<!--</form>-->
+<!--<footer class="footer">-->
+<!--    <div>Task Reminder </div>-->
+<!--</footer>-->
+<!--</body>-->
+<!--</html>-->

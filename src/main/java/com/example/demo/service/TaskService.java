@@ -5,6 +5,7 @@ import com.example.demo.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,16 +21,39 @@ public class TaskService {
     public Task addTask(Task task){
         return taskRepository.save(task);
     }
-    public Task updateTask(Task task){
+    public Task updateTask(Task task) {
+        task.setUpdated(true);
         return taskRepository.save(task);
     }
+
     public void deleteTask(Integer id){
         taskRepository.deleteById(id);
     }
     public Optional<Task> findById(Integer id){
         return taskRepository.findById(id);
     }
+
+    // ---------- FILTER BY STATUS ----------
+    public List<Task> findByStatus(String status) {
+        return taskRepository.findByStatusIgnoreCase(status);
+    }
+
+    // ---------- FILTER BY PRIORITY ----------
+    public List<Task> findByPriority(String priority) {
+        return taskRepository.findByPriorityIgnoreCase(priority);
+    }
+
+    // ---------- SEARCH BY TITLE ----------
+    public List<Task> searchByTitle(String keyword) {
+        return taskRepository.findByTitleContainingIgnoreCase(keyword);
+    }
+
+    // ---------- FILTER BY DUE DATE ----------
+    public List<Task> findByDueDate(String dueDate) {
+        return taskRepository.findByDueDate(dueDate);
+    }
 }
+
 
 
 //@Service

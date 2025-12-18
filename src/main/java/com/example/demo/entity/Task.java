@@ -3,24 +3,39 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "tasks")
 public class Task {
-    @Id //for representing the primary key
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="task_id")
+    @Column(name = "task_id")
     private Integer id;
+
+    @Column(nullable = false)
     private String title;
+
     private String description;
+
+    @Column(name = "due_date")
     private String dueDate;
+
     private String status;
+
     private String priority;
+
+    @Column(name = "created_at")
     private String createdAt;
-    private boolean updated;
 
-    public Task() {}
+    @Column(name = "updated")
+    private boolean updated = false;
 
-    public Task(Integer id, String title, String description, String dueDate,
+    // ✅ REQUIRED by JPA
+    public Task() {
+    }
+
+    // Optional constructor (no id, JPA generates it)
+    public Task(String title, String description, String dueDate,
                 String status, String priority, String createdAt) {
-        this.id = id;
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
@@ -29,6 +44,7 @@ public class Task {
         this.createdAt = createdAt;
     }
 
+    // ---------- GETTERS & SETTERS ----------
 
     public Integer getId() {
         return id;
@@ -85,11 +101,12 @@ public class Task {
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
-    public boolean isUpdated(){
+
+    public boolean isUpdated() {
         return updated;
     }
-    public void setUpdated(boolean updated){
-        this.updated=updated;
-    }
 
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
+    }
 }
