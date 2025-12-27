@@ -1,79 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
     <title>Edit Task</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 40px;
-        }
-        form {
-            width: 350px;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-        input, select, textarea {
-            width: 100%;
-            margin-top: 8px;
-            padding: 8px;
-        }
-        button {
-            margin-top: 15px;
-            padding: 10px;
-            width: 100%;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            font-size: 16px;
-        }
-    </style>
+    <link rel="stylesheet" href="/tasks.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
+
 <div class="container">
-    <div th:if ="${errorMessage}"class="flash flash-success" th:text="${errorMessage}"></div>
-    <div th:if ="${errorMessage}"class="flash flash-error" th:text="${errorMessage}"></div>
+    <header>
+        <h1>Edit Task</h1>
+        <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Back to List</a>
+    </header>
 
+    <form th:action="@{/tasks/edit}" th:object="${task}" method="post" style="margin-top: 20px;">
+
+        <input type="hidden" th:field="*{id}">
+
+        <label for="title">Title</label>
+        <input type="text" id="title" th:field="*{title}" required placeholder="Enter task title...">
+
+        <label for="description">Description</label>
+        <textarea id="description" th:field="*{description}" rows="4" placeholder="Enter task description..."></textarea>
+
+        <label for="dueDate">Due Date</label>
+        <input type="date" id="dueDate" th:field="*{dueDate}" required>
+
+        <label for="status">Status</label>
+        <select id="status" th:field="*{status}">
+            <option th:each="s : ${T(com.taskremainder.app.enums.TaskStatus).values()}"
+                    th:value="${s}"
+                    th:text="${s}">
+            </option>
+        </select>
+
+        <label for="priority">Priority</label>
+        <select id="priority" th:field="*{priority}">
+            <option th:each="p : ${T(com.taskremainder.app.enums.TaskPriority).values()}"
+                    th:value="${p}"
+                    th:text="${p}">
+            </option>
+        </select>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Task</button>
+            <a href="/tasks" class="btn btn-secondary" style="background-color: #e74c3c;">Cancel</a>
+        </div>
+
+    </form>
 </div>
-
-<h2>Edit Task</h2>
-<div th:if="${errorMessage}" style="color:red;margin-bottom:10px">
-    <p th:text="${errorMessage}"></p>
-</div>
-
-<form th:action="@{/tasks/update}" th:object="${task}" method="post">
-
-    <!-- Hidden ID field -->
-    <input type="hidden" th:field="*{id}" />
-
-    <label>Title:</label>
-    <input type="text" th:field="*{title}" required  minlength="3" maxlength="100"/>
-
-    <label>Description:</label>
-    <textarea th:field="*{description}" required></textarea>
-
-    <label>Due Date (YYYY-MM-DD):</label>
-    <input type="date" th:field="*{dueDate}" required />
-
-
-    <label>Status:</label>
-    <select th:field="*{status}">
-        <option th:value="'Pending'">Pending</option>
-        <option th:value="'In Progress'">In Progress</option>
-        <option th:value="'Completed'">Completed</option>
-    </select>
-
-    <label>Priority:</label>
-    <select th:field="*{priority}">
-        <option th:value="'Low'">Low</option>
-        <option th:value="'Medium'">Medium</option>
-        <option th:value="'High'">High</option>
-    </select>
-
-    <button type="submit">Update Task</button>
-
-</form>
 
 </body>
 </html>

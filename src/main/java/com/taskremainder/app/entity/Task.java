@@ -1,6 +1,12 @@
-package com.example.demo.entity;
+package com.taskremainder.app.entity;
 
+import com.taskremainder.app.enums.TaskPriority;
+import com.taskremainder.app.enums.TaskStatus;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
@@ -19,23 +25,31 @@ public class Task {
     @Column(name = "due_date")
     private String dueDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskStatus status;
 
-    private String priority;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskPriority priority;
 
     @Column(name = "created_at")
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated")
     private boolean updated = false;
 
-    // ✅ REQUIRED by JPA
     public Task() {
     }
 
-    // Optional constructor (no id, JPA generates it)
-    public Task(String title, String description, String dueDate,
-                String status, String priority, String createdAt) {
+    public Task(
+            String title,
+            String description,
+            String dueDate,
+            TaskStatus status,
+            TaskPriority priority,
+            LocalDateTime createdAt
+    ) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
@@ -43,6 +57,9 @@ public class Task {
         this.priority = priority;
         this.createdAt = createdAt;
     }
+    @Column(name = "completed_at")
+    private LocalDate completedAt;
+
 
     // ---------- GETTERS & SETTERS ----------
 
@@ -78,27 +95,27 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
-    public String getPriority() {
+    public TaskPriority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(TaskPriority priority) {
         this.priority = priority;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -109,4 +126,12 @@ public class Task {
     public void setUpdated(boolean updated) {
         this.updated = updated;
     }
+    public LocalDate getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDate completedAt) {
+        this.completedAt = completedAt;
+    }
+
 }

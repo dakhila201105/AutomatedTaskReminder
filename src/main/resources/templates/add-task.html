@@ -2,168 +2,55 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Add Task</title>
-
-    <style>
-        .form-row {
-            margin-bottom: 12px;
-        }
-        .markdown-toolbar button {
-            margin-right: 6px;
-            padding: 4px 8px;
-            cursor: default;
-        }
-    </style>
+    <link rel="stylesheet" href="/tasks.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
-
 <body>
 
 <div class="container">
+    <header>
+        <h1>Add New Task</h1>
+        <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Back to List</a>
+    </header>
 
-    <h1 th:text="${message}">Add New Task</h1>
+    <div th:if="${errorMessage}" class="flash-error" th:text="${errorMessage}" style="color: red; margin-bottom: 15px;"></div>
 
-    <div th:if="${errorMessage}" style="color:red; margin-bottom:10px">
-        <p th:text="${errorMessage}"></p>
-    </div>
+    <form th:action="@{/tasks/add}" th:object="${task}" method="post" style="margin-top: 20px;">
 
-    <form th:action="@{/tasks/add}" th:object="${task}" method="post">
+        <label for="title">Title</label>
+        <input type="text" id="title" th:field="*{title}" required minlength="3" placeholder="Enter task title...">
 
-        <!-- TITLE -->
-        <div class="form-row">
-            <label>Title:</label>
-            <input type="text"
-                   th:field="*{title}"
-                   required
-                   minlength="3"
-                   maxlength="100"
-                   placeholder="Enter task title" />
-        </div>
+        <label for="description">Description</label>
+        <textarea id="description" th:field="*{description}" rows="4" required placeholder="Enter task description..."></textarea>
 
-        <!-- DESCRIPTION (MARKDOWN ENABLED INPUT) -->
-        <div class="form-row">
-            <label>Description:</label>
+        <label for="dueDate">Due Date</label>
+        <input type="date" id="dueDate" th:field="*{dueDate}" required>
 
-            <textarea th:field="*{description}"
-                      rows="4"
-                      minlength="5"
-                      maxlength="500"
-                      placeholder="Enter your Text">
-            </textarea>
-        </div>
+        <label for="status">Status</label>
+        <select id="status" th:field="*{status}" required>
+            <option value="">-- Select Status --</option>
+            <option th:each="s : ${T(com.taskremainder.app.enums.TaskStatus).values()}"
+                    th:value="${s}"
+                    th:text="${s}">
+            </option>
+        </select>
 
-        <!-- DUE DATE -->
-        <div class="form-row">
-            <label>Due Date:</label>
-            <input type="date"
-                   th:field="*{dueDate}" required />
-        </div>
+        <label for="priority">Priority</label>
+        <select id="priority" th:field="*{priority}" required>
+            <option value="">-- Select Priority --</option>
+            <option th:each="p : ${T(com.taskremainder.app.enums.TaskPriority).values()}"
+                    th:value="${p}"
+                    th:text="${p}">
+            </option>
+        </select>
 
-        <!-- STATUS -->
-        <div class="form-row">
-            <label>Status:</label>
-            <select th:field="*{status}" required>
-                <option value="">--Select--</option>
-                <option value="Pending">Pending</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-            </select>
-        </div>
-
-        <!-- PRIORITY -->
-        <div class="form-row">
-            <label>Priority:</label>
-            <select th:field="*{priority}" required>
-                <option value="">--Select--</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
-        </div>
-
-        <!-- ACTIONS -->
-        <div class="form-row">
-            <button type="submit">Save Task</button>
-            <a href="/tasks">Cancel</a>
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Save Task</button>
+            <a href="/tasks" class="btn btn-secondary" style="background-color: #e74c3c;">Cancel</a>
         </div>
 
     </form>
-
 </div>
-
-<footer class="footer">
-    <div>Task Reminder</div>
-</footer>
 
 </body>
 </html>
-
-
-
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org">-->
-<!--<head>-->
-<!--    <title>Add Task</title>-->
-<!--</head>-->
-
-<!--<body>-->
-<!--<div class="container">-->
-<!--    <div th:if="${errorMessage}" class-->
-
-
-<!--</div>-->
-<!--<h1 th:text="${message}">Add New Task</h1>-->
-
-<!--<div th:if="${errorMessage}" style="color:red; margin-bottom:10px">-->
-<!--    <p th:text="${errorMessage}"></p>-->
-<!--</div>-->
-
-<!--<form th:action="@{/api/tasks/add}" th:object="${task}" method="post">-->
-
-<!--    <div class="form-row">-->
-<!--        <label>Title:</label>-->
-<!--        <input type="text" th:field="*{title}" Required minlength="1" maxlength="100" />-->
-<!--    </div>-->
-
-<!--    <div class="form-row">-->
-<!--        <label>Description:</label>-->
-<!--        <input type="text" th:field="*{description}" maxlength="500"/>-->
-<!--    </div>-->
-
-<!--    <div class="form-row">-->
-<!--        <label>Due Date:</label>-->
-<!--        <input type="date" th:field="*{dueDate}"  required-->
-<!--        th:attr="min$(dates.format(#dates.createnew(),'yyyy-mm-dd'))"/>-->
-
-<!--    </div>-->
-
-<!--    <div class="form-row">-->
-<!--        <label>Status:</label>-->
-<!--        <select th:field="*{status}">-->
-<!--            <option value ="">&#45;&#45;Select&#45;&#45;</option>-->
-<!--            <option th:value ="'Pending'"> Pending </option>-->
-<!--            <option th:value="'In Progress'">In Progress</option>-->
-<!--            <option th value="'Completed'">Completed </option>-->
-<!--        </select>-->
-<!--    </div>-->
-
-<!--    <div class="form-row">-->
-<!--        <label>Priority:</label>-->
-<!--        <select th:field="*{priority}" required>-->
-<!--            <option value ="">&#45;&#45;Select&#45;&#45;</option>-->
-<!--            <option th:value ="'Low'">Low</option>-->
-<!--            <option th:value ="'Medium'">Medium</option>-->
-<!--            <option th:value ="'High'">High</option>-->
-<!--        </select>-->
-<!--    </div>-->
-<!--    <div style="margin-top::12px;">-->
-<!--        <button type="submit"class="btn btn-primary">Save Task</button>-->
-<!--        <a href="/api/tasks" class="btn">Cancel</a>-->
-<!--    </div>-->
-
-<!--    <button type="submit">Add Task</button>-->
-
-<!--</form>-->
-<!--<footer class="footer">-->
-<!--    <div>Task Reminder </div>-->
-<!--</footer>-->
-<!--</body>-->
-<!--</html>-->

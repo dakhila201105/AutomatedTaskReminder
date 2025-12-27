@@ -1,97 +1,182 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Tasks</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks</title>
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
-<h1>All Tasks</h1>
 
+<div class="container">
+    <header>
+        <h1>Task Reminder</h1>
+        <a href="/tasks/add" class="btn btn-primary">Add Task</a>
+    </header>
 
-<div class="search-section">
+    <!-- Unified Search & Filter Section -->
+    <div class="search-section">
+        <form th:action="@{/tasks}" method="get" style="width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
+            <!-- Search by Title -->
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search by title..." />
 
-    <!-- Search by Title -->
-    <form th:action="@{/tasks/search}" method="get">
-        <input type="text"
-               name="keyword"
-               placeholder="Search by title"
-               minlength="1"
-               maxlength="100"
-               required />
-        <button type="submit">Search</button>
-    </form>
+            <!-- Filter by Status -->
+            <select name="status">
+                <option value="">-- All Statuses --</option>
+                <option th:each="s : ${T(com.taskremainder.app.enums.TaskStatus).values()}"
+                        th:value="${s}"
+                        th:text="${s}"
+                        th:selected="${s == status}">
+                </option>
+            </select>
 
-    <!-- Filter by Status -->
-    <form th:action="@{/tasks/status}" method="get">
-        <select name="status" required>
-            <option value="">-- Status --</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select>
-        <button type="submit">Filter</button>
-    </form>
+            <!-- Filter by Priority -->
+            <select name="priority">
+                <option value="">-- All Priorities --</option>
+                <option th:each="p : ${T(com.taskremainder.app.enums.TaskPriority).values()}"
+                        th:value="${p}"
+                        th:text="${p}"
+                        th:selected="${p == priority}">
+                </option>
+            </select>
 
-    <!-- Filter by Priority -->
-    <form th:action="@{/tasks/priority}" method="get">
-        <select name="priority" required>
-            <option value="">-- Priority --</option>
-            <option value="Low">Low</option>
-            <option value="Medium">Medium</option>
-            <option value="High">High</option>
-        </select>
-        <button type="submit">Filter</button>
-    </form>
+            <!-- Filter by Due Date -->
+            <input type="date" name="dueDate" th:value="${dueDate}" />
 
-    <!-- Filter by Due Date -->
-    <form th:action="@{/tasks/due}" method="get">
-        <input type="date" name="date" required />
-        <button type="submit">Filter</button>
-    </form>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Filter</button>
+            <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Clear</a>
+        </form>
+    </div>
 
+    <nav class="view-options" style="margin-bottom: 20px;">
+        <button type="button" class="btn btn-view-toggle active" data-view="table"><i class="fas fa-table"></i> Table View</button>
+        <button type="button" class="btn btn-view-toggle" data-view="card"><i class="fas fa-th-large"></i> Card View</button>
+        <button type="button" class="btn btn-view-toggle" data-view="calendar"><i class="fas fa-calendar-alt"></i> Calendar View</button>
+    </nav>
+
+    <div id="table-view" class="view active">
+        <div class="table-responsive">
+            <table class="task-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="task : ${tasks.content}">
+                    <td th:text="${task.id}"></td>
+                    <td th:text="${task.title}"></td>
+                    <td th:text="${task.description}"></td>
+                    <td th:text="${task.dueDate}"></td>
+                    <td th:text="${task.status}"></td>
+                    <td th:text="${task.priority}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <a th:href="@{/tasks/view/{id}(id=${task.id})}" class="btn btn-view">View</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-edit">Edit</a>
+                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-delete" onclick="return confirm('Delete task?')">Delete</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/markdown/{id}(id=${task.id})}" class="btn btn-mark-done">Mark Done</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="card-view" class="view">
+        <div class="card-grid">
+            <div class="flip-card" th:each="task : ${tasks.content}">
+                <div class="flip-card-inner">
+                    <!-- Front: Title and Date -->
+                    <div class="flip-card-front" th:classappend="${task.priority != null} ? ' priority-' + ${task.priority.toString().toLowerCase()} : ''">
+                        <i class="fas fa-tasks" style="font-size: 3em; color: #7f8c8d; margin-bottom: 15px;"></i>
+                        <h2 th:text="${task.title}" style="margin: 0; font-size: 1.5em; color: #2c3e50;"></h2>
+                        <p style="margin-top: 10px; color: #7f8c8d;">
+                            <i class="far fa-calendar-alt"></i>
+                            <span th:text="${task.dueDate}"></span>
+                        </p>
+                    </div>
+
+                    <!-- Back: Details and Actions -->
+                    <div class="flip-card-back">
+                        <ul>
+                            <li><strong>Priority:</strong> <span th:text="${task.priority}"></span></li>
+                            <li><strong>Status:</strong> <span th:text="${task.status}"></span></li>
+                            <li><strong>Description:</strong> <span th:text="${#strings.abbreviate(task.description, 50)}"></span></li>
+                        </ul>
+                        <div class="action-buttons" style="justify-content: center;">
+                            <a th:href="@{/tasks/view/{id}(id=${task.id})}" class="btn btn-view" style="padding: 5px 10px; font-size: 0.8em;">View</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-edit" style="padding: 5px 10px; font-size: 0.8em;">Edit</a>
+                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-delete" style="padding: 5px 10px; font-size: 0.8em;" onclick="return confirm('Delete task?')">Delete</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/markdown/{id}(id=${task.id})}" class="btn btn-mark-done" style="padding: 5px 10px; font-size: 0.8em;">Mark Done</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="calendar-view" class="view">
+        <!-- Calendar Placeholder -->
+        <h3>📅 Calendar View</h3>
+        <p>Calendar visualization coming soon...</p>
+        <div class="calendar-grid-placeholder" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;">
+            <div th:each="i : ${#numbers.sequence(1, 30)}" style="border: 1px solid #ddd; padding: 20px; text-align: left;">
+                <span th:text="${i}" style="font-weight: bold; display: block; margin-bottom: 5px;"></span>
+                <div th:each="task : ${tasks.content}" th:if="${task.dueDate != null and task.dueDate.endsWith(i < 10 ? '-0' + i : '-' + i)}"
+                     style="font-size: 0.8em; background-color: #e3f2fd; padding: 2px; margin-bottom: 2px; border-radius: 2px;">
+                     <span th:text="${task.title}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="pagination" th:if="${totalPages > 0}">
+        <span th:text="'Page ' + (${currentPage} + 1) + ' of ' + ${totalPages}"></span>
+
+        <div class="pagination-buttons">
+            <a th:if="${currentPage > 0}"
+               th:href="@{/tasks(page=${currentPage - 1}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+               class="btn btn-pagination">Previous</a>
+
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/tasks(page=${currentPage + 1}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+               class="btn btn-pagination">Next</a>
+        </div>
+    </footer>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.btn-view-toggle');
+        const views = document.querySelectorAll('.view');
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Title</th>
-        <th>Description</th>
-        <th>Due Date</th>
-        <th>Status</th>
-        <th>Priority</th>
-        <th>Created At</th>
-        <th>Updated</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="task : ${tasks}">
-        <td th:text="${task.id}"></td>
-        <td th:text="${task.title}"></td>
-        <td th:text="${task.description}"></td>
-        <td th:text="${task.dueDate}"></td>
-        <td th:text="${task.status}"></td>
-        <td th:text="${task.priority}"></td>
-        <td th:text="${task.createdAt}"></td>
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                buttons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
 
-        <td th:text="${task.updated ? 'Updated' : 'New'}"></td>
-        <td>
-            <a th:href="@{/tasks/edit/{id}(id=${task.id})}">Edit</a>
-            <a th:href="@{/tasks/delete/{id}(id=${task.id})}"
-               onclick="return confirm('Delete task?')">Delete</a>
-            <a th:href="@{/tasks/markdown/{id}(id=${task.id})}">
-                Mark Done
-            </a>
-        </td>
+                // Hide all views
+                views.forEach(view => view.classList.remove('active'));
 
-    </tr>
-    </tbody>
-</table>
-
-<a th:href="@{/tasks/add}">Add another task</a>
-
-
+                // Show selected view
+                const viewId = this.getAttribute('data-view');
+                const targetView = document.getElementById(viewId + '-view');
+                if (targetView) {
+                    targetView.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
