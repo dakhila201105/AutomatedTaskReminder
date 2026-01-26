@@ -3,80 +3,143 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Task Details</title>
-    <link rel="stylesheet" href="/tasks.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+
     <style>
         .badge {
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 6px;
             color: white;
             font-size: 14px;
             font-weight: bold;
+            display: inline-block;
         }
         .badge-high { background-color: #e74c3c; }
         .badge-medium { background-color: #f39c12; }
         .badge-low { background-color: #2ecc71; }
 
-        .status-done { color: green; font-weight: bold; }
-        .status-pending { color: orange; font-weight: bold; }
+        .status-done { color: #2ecc71; font-weight: bold; }
+        .status-pending { color: #f39c12; font-weight: bold; }
+
+        /* CENTERING FIX */
+        .task-details-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .task-details-card {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .page-header {
+            max-width: 900px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 
 <body>
 
 <div class="container">
-    <header>
-        <h1>Task Details</h1>
-        <a th:href="@{/tasks}" class="btn btn-secondary" style="background-color: #95a5a6;">Back to List</a>
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-left">
+            <h1>Task Reminder</h1>
+        </div>
+        <div class="header-right">
+            <a href="/profile" class="btn btn-profile">
+                <i class="fas fa-user"></i> Profile
+            </a>
+            <form th:action="@{/logout}" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
     </header>
 
-    <div class="task-details-card" style="margin-top: 20px;">
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+        <h2>Task Details</h2>
+        <a th:href="@{/tasks}" class="btn btn-secondary">← Back to List</a>
+    </div>
 
-        <div class="detail-row">
-            <span class="detail-label">Title</span>
-            <span class="detail-value" th:text="${task.title}">Sample title</span>
+    <!-- CENTERED CARD -->
+    <div class="task-details-wrapper">
+        <div class="task-details-card">
+
+            <div class="detail-row">
+                <span class="detail-label">Title</span>
+                <span class="detail-value" th:text="${task.title}"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Description</span>
+                <span class="detail-value" th:text="${task.description}"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Due Date</span>
+                <span class="detail-value" th:text="${task.dueDate}"></span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Status</span>
+                <span class="detail-value"
+                      th:text="${task.status}"
+                      th:classappend="${task.status.name() == 'DONE'} ? ' status-done' : ' status-pending'">
+                </span>
+            </div>
+
+            <div class="detail-row">
+                <span class="detail-label">Priority</span>
+                <span class="badge"
+                      th:text="${task.priority}"
+                      th:classappend="' badge-' + ${task.priority.name().toLowerCase()}">
+                </span>
+            </div>
+
+            <div class="detail-row" th:if="${task.createdAt != null}">
+                <span class="detail-label">Created At</span>
+                <span class="detail-value"
+                      th:text="${#temporals.format(task.createdAt,'yyyy-MM-dd')}">
+                </span>
+            </div>
+
+            <div class="detail-row" th:if="${task.completedAt != null}">
+                <span class="detail-label">Completed At</span>
+                <span class="detail-value"
+                      th:text="${#temporals.format(task.completedAt,'yyyy-MM-dd')}">
+                </span>
+            </div>
+
+            <div class="action-buttons" style="margin-top:30px;">
+                <a th:if="${task.status.name() != 'DONE'}"
+                   th:href="@{/tasks/edit/{id}(id=${task.id})}"
+                   class="btn btn-edit">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+
+                <a th:href="@{/tasks/delete/{id}(id=${task.id})}"
+                   class="btn btn-delete"
+                   onclick="return confirm('Delete task?')">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+
         </div>
-
-        <div class="detail-row">
-            <span class="detail-label">Description</span>
-            <span class="detail-value" th:text="${task.description}">Sample description</span>
-        </div>
-
-        <div class="detail-row">
-            <span class="detail-label">Due Date</span>
-            <span class="detail-value" th:text="${task.dueDate}">2025-01-01</span>
-        </div>
-
-        <div class="detail-row">
-            <span class="detail-label">Status</span>
-            <span class="detail-value" th:text="${task.status}"
-                  th:classappend="${task.status == 'DONE'} ? ' status-done' : ' status-pending'">
-            </span>
-        </div>
-
-        <div class="detail-row">
-            <span class="detail-label">Priority</span>
-            <span class="badge"
-                  th:text="${task.priority}"
-                  th:classappend="${task.priority != null} ? ' badge-' + ${task.priority.toString().toLowerCase()} : ''">
-            </span>
-        </div>
-
-        <div class="detail-row" th:if="${task.createdAt != null}">
-            <span class="detail-label">Created At</span>
-            <span class="detail-value" th:text="${#temporals.format(task.createdAt, 'yyyy-MM-dd')}"></span>
-        </div>
-
-        <div class="detail-row" th:if="${task.completedAt != null}">
-            <span class="detail-label">Completed At</span>
-            <span class="detail-value" th:text="${#temporals.format(task.completedAt, 'yyyy-MM-dd')}"></span>
-        </div>
-
-        <div class="action-buttons" style="margin-top: 30px;">
-            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
-            <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-delete" onclick="return confirm('Delete task?')"><i class="fas fa-trash"></i> Delete</a>
-        </div>
-
     </div>
 
 </div>

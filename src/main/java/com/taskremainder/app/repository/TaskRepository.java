@@ -12,15 +12,17 @@ import java.time.LocalDate;
 public interface TaskRepository extends JpaRepository<Task, Integer> {
 
     // 🔍 SEARCH
-    Page<Task> findByTitleContainingIgnoreCase(String title, Pageable pageable);
+    Page<Task> findByUserEmailAndTitleContainingIgnoreCase(String email, String title, Pageable pageable);
 
     // 🔍 COMPLEX SEARCH
-    @org.springframework.data.jpa.repository.Query("SELECT t FROM Task t WHERE " +
+    @org.springframework.data.jpa.repository.Query("SELECT t FROM Task t LEFT JOIN FETCH t.user WHERE " +
+            "t.user.email = :email AND t.deleted = false AND " +
             "(:keyword IS NULL OR LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
             "(:status IS NULL OR t.status = :status) AND " +
             "(:priority IS NULL OR t.priority = :priority) AND " +
             "(:dueDate IS NULL OR t.dueDate = :dueDate)")
     Page<Task> searchTasks(
+            @org.springframework.data.repository.query.Param("email") String email,
             @org.springframework.data.repository.query.Param("keyword") String keyword,
             @org.springframework.data.repository.query.Param("status") TaskStatus status,
             @org.springframework.data.repository.query.Param("priority") TaskPriority priority,
@@ -28,15 +30,26 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
             Pageable pageable
     );
 
-    // 🎯 FILTERS
-    Page<Task> findByStatus(TaskStatus status, Pageable pageable);
-
-    Page<Task> findByPriority(TaskPriority priority, Pageable pageable);
+    // 🗑️ BIN
+    Page<Task> findByUserEmailAndDeletedTrue(String email, Pageable pageable);
 
     // 📅 DATE QUERIES
-    Page<Task> findByDueDate(String date, Pageable pageable);
+    Page<Task> findByUserEmailAndDeletedFalseAndDueDate(String email, String date, Pageable pageable);
+    
+    // Find all by user (Non-deleted)
+    Page<Task> findByUserEmailAndDeletedFalse(String email, Pageable pageable);
+    
+    // Find all by user (Including deleted) for CSV? Usually just active.
+    java.util.List<Task> findByUserEmailAndDeletedFalse(String email);
 
-    Page<Task> findByDueDateBefore(String date, Pageable pageable);
+    Page<Task> findByUserEmailAndDueDateBetween(String email, String startDate, String endDate, Pageable pageable);
+    
+    Page<Task> findByUserEmailAndDueDateBefore(String email, String date, Pageable pageable);
 
-    Page<Task> findByDueDateBetween(String start, String end, Pageable pageable);
+    // 🔔 REMINDERS
+    java.util.List<Task> findByDueDateAndReminderSentFalseAndDeletedFalse(String dueDate);
+
+    long countByUserAndStatusAndDeletedFalse(com.taskremainder.app.entity.User user, TaskStatus status);
+
+    java.util.List<Task> findByUserAndStatusAndDeletedFalse(com.taskremainder.app.entity.User user, TaskStatus status);
 }

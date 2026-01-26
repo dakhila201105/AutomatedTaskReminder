@@ -8,10 +8,22 @@
 <body>
 
 <div class="container">
-    <header>
-        <h1>Add New Task</h1>
-        <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Back to List</a>
+    <header class="main-header">
+        <div class="header-left">
+            <h1>Task Reminder</h1>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-profile"><i class="fas fa-user"></i> Profile</button>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </form>
+        </div>
     </header>
+
+    <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 style="margin: 0;">Add New Task</h2>
+        <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Back to List</a>
+    </div>
 
     <div th:if="${errorMessage}" class="flash-error" th:text="${errorMessage}" style="color: red; margin-bottom: 15px;"></div>
 
@@ -38,7 +50,7 @@
         <label for="priority">Priority</label>
         <select id="priority" th:field="*{priority}" required>
             <option value="">-- Select Priority --</option>
-            <option th:each="p : ${T(com.taskremainder.app.enums.TaskPriority).values()}"
+            <option th:each="p : ${priorities}"
                     th:value="${p}"
                     th:text="${p}">
             </option>

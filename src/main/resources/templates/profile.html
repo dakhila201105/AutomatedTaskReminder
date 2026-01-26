@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .profile-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 2rem auto;
+            text-align: center;
+        }
+        .profile-image-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #f0f2f5;
+        }
+        .profile-form {
+            text-align: left;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #4a5568;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e0;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+        }
+        .file-upload {
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments :: sidebar"></div>
+
+<div class="container">
+    <header class="main-header">
+        <div class="header-left">
+            <h1>My Profile</h1>
+        </div>
+    </header>
+
+    <div th:if="${success}" class="flash-success" style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 20px; border-radius: 5px;" th:text="${success}"></div>
+    <div th:if="${error}" class="flash-error" style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 20px; border-radius: 5px;" th:text="${error}"></div>
+
+    <div class="profile-card">
+        <div class="profile-image-container">
+            <img th:src="${user.profilePhoto != null ? user.profilePhoto : 'https://via.placeholder.com/150'}" alt="Profile Picture" class="profile-image">
+        </div>
+
+        <form th:action="@{/profile/update}" method="post" enctype="multipart/form-data" class="profile-form">
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-input" th:value="${user.email}" disabled style="background-color: #f7fafc;">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="name">Full Name</label>
+                <input type="text" id="name" name="name" class="form-input" th:value="${user.name}" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="profileImage">Update Profile Picture</label>
+                <input type="file" id="profileImage" name="profileImage" class="form-input file-upload" accept="image/*">
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

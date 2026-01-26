@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Tasks</title>
     <link rel="stylesheet" th:href="@{/tasks.css}">
+    <script src="/js/world-clock.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 
+<div th:replace="~{fragments :: sidebar}"></div>
+
 <div class="container">
-    <header>
-        <h1>Task Reminder</h1>
-        <a href="/tasks/add" class="btn btn-primary">Add Task</a>
+    <header class="main-header">
+        <div class="header-left">
+            <h1>Task Reminder</h1>
+            <div class="header-right">
+                <a href="/tasks/add" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Task
+                </a>
+            </div>
     </header>
 
     <!-- Unified Search & Filter Section -->
@@ -24,7 +32,7 @@
             <!-- Filter by Status -->
             <select name="status">
                 <option value="">-- All Statuses --</option>
-                <option th:each="s : ${T(com.taskremainder.app.enums.TaskStatus).values()}"
+                <option th:each="s : ${statuses}"
                         th:value="${s}"
                         th:text="${s}"
                         th:selected="${s == status}">
@@ -34,7 +42,7 @@
             <!-- Filter by Priority -->
             <select name="priority">
                 <option value="">-- All Priorities --</option>
-                <option th:each="p : ${T(com.taskremainder.app.enums.TaskPriority).values()}"
+                <option th:each="p : ${priorities}"
                         th:value="${p}"
                         th:text="${p}"
                         th:selected="${p == priority}">
@@ -48,11 +56,26 @@
             <a href="/tasks" class="btn btn-secondary" style="background-color: #95a5a6;">Clear</a>
         </form>
     </div>
+    <div class="world-clock">
+        <i class="fas fa-clock"></i>
+        <span id="clock-label">Local</span> :
+        <span id="clock-time">--:--:--</span>
+
+        <select id="timezone-select">
+            <option value="local">Local</option>
+            <option value="Asia/Kolkata">India</option>
+            <option value="UTC">UTC</option>
+            <option value="America/New_York">New York</option>
+            <option value="Europe/London">London</option>
+            <option value="Asia/Tokyo">Tokyo</option>
+        </select>
+    </div>
+
 
     <nav class="view-options" style="margin-bottom: 20px;">
-        <button type="button" class="btn btn-view-toggle active" data-view="table"><i class="fas fa-table"></i> Table View</button>
-        <button type="button" class="btn btn-view-toggle" data-view="card"><i class="fas fa-th-large"></i> Card View</button>
-        <button type="button" class="btn btn-view-toggle" data-view="calendar"><i class="fas fa-calendar-alt"></i> Calendar View</button>
+        <button type="button" class="btn btn-view-toggle active" data-view="table-view" onclick="switchView('table-view')"><i class="fas fa-table"></i> Table View</button>
+        <button type="button" class="btn btn-view-toggle" data-view="card-view" onclick="switchView('card-view')"><i class="fas fa-th-large"></i> Card View</button>
+        <button type="button" class="btn btn-view-toggle" data-view="calendar-view" onclick="switchView('calendar-view')"><i class="fas fa-calendar-alt"></i> Calendar View</button>
     </nav>
 
     <div id="table-view" class="view active">
@@ -94,28 +117,19 @@
         <div class="card-grid">
             <div class="flip-card" th:each="task : ${tasks.content}">
                 <div class="flip-card-inner">
-                    <!-- Front: Title and Date -->
-                    <div class="flip-card-front" th:classappend="${task.priority != null} ? ' priority-' + ${task.priority.toString().toLowerCase()} : ''">
-                        <i class="fas fa-tasks" style="font-size: 3em; color: #7f8c8d; margin-bottom: 15px;"></i>
-                        <h2 th:text="${task.title}" style="margin: 0; font-size: 1.5em; color: #2c3e50;"></h2>
-                        <p style="margin-top: 10px; color: #7f8c8d;">
-                            <i class="far fa-calendar-alt"></i>
-                            <span th:text="${task.dueDate}"></span>
-                        </p>
+                    <!-- Front: Title and Description -->
+                    <div class="flip-card-front" th:classappend="${task.priority != null} ? ' priority-' + ${#strings.toLowerCase(task.priority.name())} : ''">
+                        <h2 th:text="${task.title}" style="margin: 0; font-size: 1.5em; color: #2c3e50; margin-bottom: 10px;"></h2>
+                        <p style="color: #555; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;" th:text="${task.description}"></p>
                     </div>
 
-                    <!-- Back: Details and Actions -->
+                    <!-- Back: Action Buttons -->
                     <div class="flip-card-back">
-                        <ul>
-                            <li><strong>Priority:</strong> <span th:text="${task.priority}"></span></li>
-                            <li><strong>Status:</strong> <span th:text="${task.status}"></span></li>
-                            <li><strong>Description:</strong> <span th:text="${#strings.abbreviate(task.description, 50)}"></span></li>
-                        </ul>
-                        <div class="action-buttons" style="justify-content: center;">
-                            <a th:href="@{/tasks/view/{id}(id=${task.id})}" class="btn btn-view" style="padding: 5px 10px; font-size: 0.8em;">View</a>
-                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-edit" style="padding: 5px 10px; font-size: 0.8em;">Edit</a>
-                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-delete" style="padding: 5px 10px; font-size: 0.8em;" onclick="return confirm('Delete task?')">Delete</a>
-                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/markdown/{id}(id=${task.id})}" class="btn btn-mark-done" style="padding: 5px 10px; font-size: 0.8em;">Mark Done</a>
+                        <div class="action-buttons" style="flex-direction: column; gap: 10px; width: 80%; align-items: center;">
+                            <a th:href="@{/tasks/view/{id}(id=${task.id})}" class="btn btn-view" style="width: 100%; text-align: center;">View</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/edit/{id}(id=${task.id})}" class="btn btn-edit" style="width: 100%; text-align: center;">Edit</a>
+                            <a th:href="@{/tasks/delete/{id}(id=${task.id})}" class="btn btn-delete" onclick="return confirm('Delete task?')" style="width: 100%; text-align: center;">Delete</a>
+                            <a th:if="${task.status.name() != 'DONE'}" th:href="@{/tasks/markdown/{id}(id=${task.id})}" class="btn btn-mark-done" style="width: 100%; text-align: center;">Mark Done</a>
                         </div>
                     </div>
                 </div>
@@ -123,60 +137,99 @@
         </div>
     </div>
     <div id="calendar-view" class="view">
-        <!-- Calendar Placeholder -->
-        <h3>📅 Calendar View</h3>
-        <p>Calendar visualization coming soon...</p>
-        <div class="calendar-grid-placeholder" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 20px;">
-            <div th:each="i : ${#numbers.sequence(1, 30)}" style="border: 1px solid #ddd; padding: 20px; text-align: left;">
-                <span th:text="${i}" style="font-weight: bold; display: block; margin-bottom: 5px;"></span>
-                <div th:each="task : ${tasks.content}" th:if="${task.dueDate != null and task.dueDate.endsWith(i < 10 ? '-0' + i : '-' + i)}"
-                     style="font-size: 0.8em; background-color: #e3f2fd; padding: 2px; margin-bottom: 2px; border-radius: 2px;">
-                     <span th:text="${task.title}"></span>
+        <!-- Calendar View -->
+        <h3 style="text-align: center; margin-bottom: 20px;">📅 Calendar View</h3>
+        <div class="calendar-grid-placeholder" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 20px;">
+            <!-- Day Headers -->
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Sun</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Mon</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Tue</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Wed</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Thu</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Fri</div>
+            <div style="font-weight: bold; text-align: center; background: #eee; padding: 10px;">Sat</div>
+
+            <!-- Calendar Days (1-31) -->
+            <div th:each="i : ${#numbers.sequence(1, 31)}" style="border: 1px solid #ddd; padding: 5px; min-height: 80px; background: #fff; position: relative;">
+                <span th:text="${i}" style="font-weight: bold; display: block; margin-bottom: 5px; color: #999; font-size: 0.8em;"></span>
+                
+                <div th:each="task : ${tasks.content}">
+                     <!-- Matching day logic (simplified) -->
+                     <div th:if="${task.dueDate != null and #strings.endsWith(task.dueDate, '-' + #numbers.formatInteger(i, 2))}" 
+                          style="margin-bottom: 2px;">
+                         <a th:href="@{/tasks/view/{id}(id=${task.id})}"
+                            style="display: block; font-size: 0.8em; color: #3498db; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                            th:title="${task.title}">
+                             <span th:text="${task.title}"></span>
+                         </a>
+                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <footer class="pagination" th:if="${totalPages > 0}">
-        <span th:text="'Page ' + (${currentPage} + 1) + ' of ' + ${totalPages}"></span>
-
-        <div class="pagination-buttons">
+    <div class="pagination-container" th:if="${totalPages > 0}" style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #f8f9fa; border-radius: 5px;">
+        <div class="pagination-info">
+            <span>Showing <span th:text="${tasks.number * tasks.size + 1}"></span> to 
+                  <span th:text="${(tasks.number * tasks.size) + tasks.numberOfElements}"></span> of 
+                  <span th:text="${tasks.totalElements}"></span> tasks</span>
+        </div>
+        
+        <div class="pagination-controls" style="display: flex; gap: 0.5rem;">
+            <!-- First Page -->
+            <a th:if="${currentPage > 0}" 
+               th:href="@{/tasks(page=0, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+               class="btn btn-pagination" title="First Page">
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            
+            <!-- Previous Page -->
             <a th:if="${currentPage > 0}"
                th:href="@{/tasks(page=${currentPage - 1}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
-               class="btn btn-pagination">Previous</a>
+               class="btn btn-pagination" title="Previous">
+                <i class="fas fa-angle-left"></i>
+            </a>
 
+            <!-- Page Numbers -->
+            <div class="page-numbers" style="display: flex; gap: 0.25rem;">
+                <a th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                   th:if="${(i >= currentPage - 2 and i <= currentPage + 2) or i == 0 or i == totalPages - 1}"
+                   th:classappend="${i == currentPage} ? 'active' : ''"
+                   th:href="@{/tasks(page=${i}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+                   class="btn btn-pagination"
+                   th:text="${i + 1}">
+                </a>
+                <span class="ellipsis" th:if="${totalPages > 5 and currentPage < totalPages - 3}" style="align-self: center;">...</span>
+            </div>
+
+            <!-- Next Page -->
             <a th:if="${currentPage < totalPages - 1}"
                th:href="@{/tasks(page=${currentPage + 1}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
-               class="btn btn-pagination">Next</a>
+               class="btn btn-pagination" title="Next">
+                <i class="fas fa-angle-right"></i>
+            </a>
+            
+            <!-- Last Page -->
+            <a th:if="${currentPage < totalPages - 1}" 
+               th:href="@{/tasks(page=${totalPages - 1}, size=${size}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+               class="btn btn-pagination" title="Last Page">
+                <i class="fas fa-angle-double-right"></i>
+            </a>
         </div>
-    </footer>
+        
+        <div class="page-size" style="display: flex; align-items: center; gap: 0.5rem;">
+            <span>Tasks per page:</span>
+            <select onchange="window.location.href=this.value" style="padding: 0.25rem;">
+                <option th:each="s : ${pageSizes}"
+                        th:value="@{/tasks(page=0, size=${s}, keyword=${keyword}, status=${status}, priority=${priority}, dueDate=${dueDate})}"
+                        th:text="${s}"
+                        th:selected="${s == size}">
+                </option>
+            </select>
+        </div>
+    </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('.btn-view-toggle');
-        const views = document.querySelectorAll('.view');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                buttons.forEach(btn => btn.classList.remove('active'));
-                // Add active class to clicked button
-                this.classList.add('active');
-
-                // Hide all views
-                views.forEach(view => view.classList.remove('active'));
-
-                // Show selected view
-                const viewId = this.getAttribute('data-view');
-                const targetView = document.getElementById(viewId + '-view');
-                if (targetView) {
-                    targetView.classList.add('active');
-                }
-            });
-        });
-    });
-</script>
-
+<script th:src="@{/js/tasks.js}"></script>
 </body>
 </html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Task Reminder</title>
+
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<!-- ================= SIDEBAR FRAGMENT ================= -->
+<div th:fragment="sidebar" class="sidebar">
+
+    <div class="sidebar-header">
+        <h2><i class="fas fa-check-double"></i> TaskApp</h2>
+    </div>
+
+    <!-- USER INFO -->
+    <div class="user-info" th:if="${user != null}">
+        <div class="user-avatar">
+            <img th:if="${user.profilePhoto != null}"
+                 th:src="${user.profilePhoto}"
+                 alt="Profile">
+
+            <i th:unless="${user.profilePhoto != null}"
+               class="fas fa-user-circle"></i>
+        </div>
+
+        <div class="user-details">
+            <p class="welcome-text">Welcome,</p>
+            <p class="user-name"
+               th:text="${user.name != null ? user.name : user.email}">
+                User
+            </p>
+        </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="sidebar-nav">
+        <a th:href="@{/dashboard}"
+           th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+            📊 Dashboard
+        </a>
+
+        <a th:href="@{/tasks}"
+           th:classappend="${activePage == 'tasks'} ? ' active' : ''">
+            📝 Tasks
+        </a>
+
+        <a th:href="@{/profile}"
+           th:classappend="${activePage == 'profile'} ? ' active' : ''">
+            👤 Profile
+        </a>
+
+        <a th:href="@{/bin}"
+           th:classappend="${activePage == 'bin'} ? ' active' : ''">
+            🗑 Bin
+        </a>
+
+    </nav>
+
+    <!-- LOGOUT -->
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn-logout-sidebar">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </div>
+
+</div>
+</html>

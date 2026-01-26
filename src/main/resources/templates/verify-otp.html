@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify OTP - Task Reminder</title>
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+        }
+        .auth-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-container h2 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .auth-container p {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 18px;
+            letter-spacing: 5px;
+            text-align: center;
+        }
+        .btn-auth {
+            width: 100%;
+            padding: 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .btn-auth:hover {
+            background-color: #27ae60;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            background: #fadbd8;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success-message {
+            color: #27ae60;
+            margin-bottom: 15px;
+            background: #d4efdf;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .resend-link {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .resend-link button {
+            background: none;
+            border: none;
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+            font: inherit;
+        }
+        .resend-link button:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Verify Email</h2>
+    <p>Please enter the 6-digit OTP sent to <strong th:text="${email}">your email</strong></p>
+
+    <div th:if="${error}" class="error-message" th:text="${error}"></div>
+    <div th:if="${success}" class="success-message" th:text="${success}"></div>
+
+    <form th:action="@{/verify-otp}" method="post">
+        <input type="hidden" name="email" th:value="${email}">
+        <div class="form-group">
+            <input type="text" id="otp" name="otp" required placeholder="000000" maxlength="6" pattern="\d{6}" title="Please enter a 6-digit OTP" autofocus autocomplete="one-time-code">
+        </div>
+        <button type="submit" class="btn-auth">Verify OTP</button>
+    </form>
+
+    <div class="resend-link">
+        <form th:action="@{/resend-otp}" method="post">
+            <input type="hidden" name="email" th:value="${email}">
+            Didn't receive the code? <button type="submit">Resend OTP</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

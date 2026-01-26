@@ -36,8 +36,18 @@ public class Task {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     @Column(name = "updated")
     private boolean updated = false;
+
+    @Column(name = "deleted", nullable = false, columnDefinition = "boolean default false")
+    private boolean deleted = false;
+
+    @Column(name = "reminder_sent", nullable = false, columnDefinition = "boolean default false")
+    private boolean reminderSent = false;
 
     public Task() {
     }
@@ -48,7 +58,8 @@ public class Task {
             String dueDate,
             TaskStatus status,
             TaskPriority priority,
-            LocalDateTime createdAt
+            LocalDateTime createdAt,
+            User user
     ) {
         this.title = title;
         this.description = description;
@@ -56,9 +67,11 @@ public class Task {
         this.status = status;
         this.priority = priority;
         this.createdAt = createdAt;
+        this.user = user;
     }
     @Column(name = "completed_at")
     private LocalDate completedAt;
+
 
 
     // ---------- GETTERS & SETTERS ----------
@@ -69,6 +82,14 @@ public class Task {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getTitle() {
@@ -126,6 +147,14 @@ public class Task {
     public void setUpdated(boolean updated) {
         this.updated = updated;
     }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
     public LocalDate getCompletedAt() {
         return completedAt;
     }
@@ -134,4 +163,11 @@ public class Task {
         this.completedAt = completedAt;
     }
 
+    public boolean isReminderSent() {
+        return reminderSent;
+    }
+
+    public void setReminderSent(boolean reminderSent) {
+        this.reminderSent = reminderSent;
+    }
 }

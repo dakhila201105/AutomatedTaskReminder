@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Task Reminder</title>
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .auth-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-container h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn-auth {
+            width: 100%;
+            padding: 10px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-auth:hover {
+            background-color: #27ae60;
+        }
+        .error-message {
+            color: #e74c3c;
+            margin-bottom: 15px;
+            background: #fadbd8;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success-message {
+            color: #27ae60;
+            margin-bottom: 15px;
+            background: #d4efdf;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .links {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .links a {
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Welcome Back</h2>
+
+    <div th:if="${param.error}" class="error-message">
+        Invalid email or password.
+    </div>
+
+    <div th:if="${param.logout}" class="success-message">
+        You have been logged out.
+    </div>
+    
+    <div th:if="${success}" class="success-message" th:text="${success}"></div>
+
+    <form th:action="@{/login}" method="post">
+        <div class="form-group">
+            <label for="username">Email</label>
+            <input type="text" id="username" name="username" required placeholder="Enter your email" autofocus>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter your password">
+        </div>
+
+        <button type="submit" class="btn-auth">Login</button>
+    </form>
+
+    <div class="links">
+        Don't have an account? <a th:href="@{/register}">Register here</a>
+    </div>
+</div>
+
+</body>
+</html>

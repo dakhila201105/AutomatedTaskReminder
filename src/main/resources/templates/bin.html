@@ -1,10 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Bin - Deleted Tasks</title>
+
+    <link rel="stylesheet" th:href="@{/tasks.css}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
-$END$
+
+<!-- ================= SIDEBAR ================= -->
+<div th:replace="~{fragments :: sidebar}"></div>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="container">
+
+    <header class="main-header">
+        <div class="header-left">
+            <h1>🗑 Deleted Tasks</h1>
+        </div>
+    </header>
+
+    <!-- EMPTY STATE -->
+    <div th:if="${tasks == null or tasks.totalElements == 0}"
+         style="margin-top: 20px;">
+        <p>No deleted tasks found.</p>
+    </div>
+
+    <!-- TASKS TABLE -->
+    <div class="table-responsive"
+         th:if="${tasks != null and tasks.totalElements > 0}">
+
+        <table class="task-table">
+            <thead>
+            <tr>
+                <th>Title</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr th:each="task : ${tasks.content}">
+                <td th:text="${task.title}">Task Title</td>
+                <td th:text="${task.dueDate}">Due Date</td>
+                <td th:text="${task.priority}">Priority</td>
+                <td>
+                    <div class="action-buttons">
+                        <a th:href="@{/bin/restore/{id}(id=${task.id})}"
+                           class="btn btn-view">
+                            ♻ Restore
+                        </a>
+
+                        <a th:href="@{/bin/delete-forever/{id}(id=${task.id})}"
+                           class="btn btn-delete"
+                           onclick="return confirm('Delete permanently? This cannot be undone.')">
+                            🗑 Delete Forever
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
 </body>
 </html>

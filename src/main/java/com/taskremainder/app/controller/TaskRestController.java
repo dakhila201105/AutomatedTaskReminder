@@ -84,6 +84,7 @@ public class TaskRestController {
         return taskService.findById(id)
                 .map(task -> {
                     task.setStatus(TaskStatus.DONE);
+                    task.setCompletedAt(java.time.LocalDate.now());
                     return ResponseEntity.ok(taskService.save(task));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -116,4 +117,5 @@ public class TaskRestController {
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(taskService.getOverdueTasks(pageable));
     }
+
 }
