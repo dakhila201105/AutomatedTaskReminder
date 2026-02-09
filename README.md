@@ -34,3 +34,13 @@ A Spring Boot–based Task Reminder application that helps users manage tasks ef
 ## 📄 License
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📊 Agile Documentation
+
+The project planning, sprint tracking, and task management details are available here:
+
+📁 [Agile Task Documentation](Agile_task_final%20(2).xlsx)
+
+---
